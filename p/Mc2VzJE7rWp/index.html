@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header */
+        .header {
+            height: 56px;
+            background-color: #000;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            flex-shrink: 0;
+        }
+
+        .header-logo {
+            height: 36px;
+            width: auto;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            color: #fff;
+            position: relative;
+        }
+
+        .header-icon.badge::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            top: -2px;
+            right: -2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Stories */
+        .stories {
+            height: 88px;
+            background-color: #000;
+            border-bottom: 1px solid #222;
+            padding: 8px 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            flex-shrink: 0;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .stories::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .stories::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 2px;
+        }
+
+        .story {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 68px;
+            cursor: pointer;
+        }
+
+        .story-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .story-ring.no-gradient {
+            background: #333;
+        }
+
+        .story-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #000;
+        }
+
+        .story-plus {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background-color: #0095f6;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .story-label {
+            font-size: 12px;
+            max-width: 68px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #aaa;
+            display: none;
+        }
+
+        /* Feed */
+        .feed {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background-color: #000;
+        }
+
+        .feed::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .feed::-webkit-scrollbar-thumb {
+            background-color: #444;
+            border-radius: 2px;
+        }
+
+        .feed-item {
+            width: 100%;
+            aspect-ratio: 4/5;
+            background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s infinite;
+            position: relative;
+            border-bottom: 1px solid #222;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .feed-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.1), transparent 30%, transparent 70%, rgba(0,0,0,0.1));
+            pointer-events: none;
+        }
+
+        .feed-header {
+            display: none !important;
+        }
+
+        .feed-item:not(:first-child) .feed-header,
+        .feed-item:not(:first-child) .feed-actions {
+            display: none;
+        }
+
+        .feed-actions {
+            position: absolute;
+            right: 12px;
+            bottom: 60px;
+            display: none !important;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 2;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+
+        .action-count {
+            font-size: 11px;
+            color: #fff;
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            height: 56px;
+            background-color: #000;
+            border-top: 1px solid #222;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #aaa;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s ease;
+        }
+
+        .nav-icon:hover, .nav-icon.active {
+            color: #fff;
+        }
+
+        .nav-icon.badge::after {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: flex-end;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-bottom-sheet {
+            background-color: #1a1a1a;
+            border-radius: 20px 20px 0 0;
+            padding: 32px 20px 24px;
+            width: 100%;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-icon {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-illustration {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+        }
+
+        .modal-illustration::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=200&h=200&fit=crop');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+        }
+
+        .modal-icon-inner {
+            position: relative;
+            z-index: 1;
+            font-size: 56px;
+            color: #fff;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            letter-spacing: -0.2px;
+        }
+
+        .modal-description {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        .modal-button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-button {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-button-primary {
+            background-color: #0095f6;
+            color: #fff;
+        }
+
+        .modal-button-primary:hover {
+            background-color: #0080d0;
+        }
+
+        .modal-button-secondary {
+            background-color: transparent;
+            color: #0095f6;
+            border: 1px solid #333;
+        }
+
+        .modal-button-secondary:hover {
+            background-color: rgba(0, 149, 246, 0.08);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .status-bar {
+                font-size: 10px;
+                padding: 4px 12px;
+            }
+
+            .header {
+                padding: 0 12px;
+            }
+
+            .header-logo {
+                height: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <img src="logo-instagram.png" alt="Instagram" class="header-logo">
+        <div class="header-right">
+            <div class="header-icon">
+                <i class="far fa-heart"></i>
+            </div>
+            <div class="header-icon badge">
+                <i class="far fa-paper-plane"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Stories -->
+        <div class="stories">
+            <div class="story">
+                <div class="story-ring no-gradient">
+                    <div class="story-avatar" style="background: linear-gradient(135deg, #555, #333);"></div>
+                    <div class="story-plus">+</div>
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-ring">
+                    <div class="story-avatar" style="background: linear-gradient(135deg, #555, #333);"></div>
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-ring">
+                    <div class="story-avatar" style="background: linear-gradient(135deg, #555, #333);"></div>
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-ring">
+                    <div class="story-avatar" style="background: linear-gradient(135deg, #555, #333);"></div>
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-ring">
+                    <div class="story-avatar" style="background: linear-gradient(135deg, #555, #333);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed -->
+        <div class="feed">
+            <div class="feed-item">
+                <div class="feed-header">2/5</div>
+                <div class="feed-actions">
+                    <div class="action-item">
+                        <button class="action-btn">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <span class="action-count">1,234</span>
+                    </div>
+                    <div class="action-item">
+                        <button class="action-btn">
+                            <i class="far fa-comment"></i>
+                        </button>
+                        <span class="action-count">45</span>
+                    </div>
+                    <div class="action-item">
+                        <button class="action-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    <div class="action-item">
+                        <button class="action-btn">
+                            <i class="far fa-bookmark"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="feed-item"></div>
+            <div class="feed-item"></div>
+            <div class="feed-item"></div>
+            <div class="feed-item"></div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-icon active">
+            <i class="fas fa-home"></i>
+        </div>
+        <div class="nav-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <div class="nav-icon">
+            <i class="far fa-square"></i>
+        </div>
+        <div class="nav-icon">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="nav-icon badge">
+            <i class="far fa-user"></i>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-bottom-sheet">
+            <div class="modal-icon">
+                <div class="modal-illustration">
+                    <div class="modal-icon-inner">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-title">Sesi Anda Telah Berakhir</div>
+            <div class="modal-description">Demi menjaga keamanan akun Anda, sesi login telah berakhir. Silakan masuk kembali untuk melanjutkan penggunaan Instagram.</div>
+            <div class="modal-button-group">
+                <button class="modal-button modal-button-primary" onclick="window.location.href='log.html'">
+                    Masuk Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tampilkan modal setelah 3 detik
+        setTimeout(() => {
+            document.getElementById('modal').classList.add('active');
+        }, 3000);
+    </script>
+</body>
+</html>
